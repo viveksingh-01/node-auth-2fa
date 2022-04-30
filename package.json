@@ -1,0 +1,20 @@
+{
+  "name": "auth-2fa",
+  "version": "1.0.0",
+  "description": "Implementation of two-factor authentication and authorization in Node.js",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/viveksingh-01/node-auth-2fa.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/viveksingh-01/node-auth-2fa/issues"
+  },
+  "homepage": "https://github.com/viveksingh-01/node-auth-2fa#readme"
+}
