@@ -4,6 +4,7 @@
   "description": "Implementation of two-factor authentication and authorization in Node.js",
   "main": "index.js",
   "scripts": {
+    "format": "prettier --write \"src/**/*.{js,ts}\"",
     "start": "node src/index.ts"
   },
   "repository": {
@@ -18,6 +19,7 @@
   },
   "homepage": "https://github.com/viveksingh-01/node-auth-2fa#readme",
   "devDependencies": {
+    "prettier": "^2.6.2",
     "typescript": "^4.6.4"
   }
 }
