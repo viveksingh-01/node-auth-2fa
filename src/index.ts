@@ -1,5 +1,6 @@
-import express, { Request, Response } from "express";
+import express from "express";
 import { AppDataSource } from "./data-source";
+import authRouter from "./routes/auth";
 
 AppDataSource.initialize()
   .then(async () => {
@@ -7,11 +8,9 @@ AppDataSource.initialize()
 
     const app = express();
 
-    app.get("/", (req: Request, res: Response) => {
-      res
-        .status(200)
-        .send("Welcome to Two-Factor Authentication using Node.js");
-    });
+    app.use(express.json());
+
+    app.use("/api", authRouter);
 
     const PORT = 5000;
     app.listen(PORT, () => {
