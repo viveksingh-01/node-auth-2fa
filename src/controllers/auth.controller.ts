@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import { Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
 import { AppDataSource } from '../data-source';
 import { User } from '../entity/User';
 
@@ -61,6 +62,24 @@ export const Login = async (req: Request, res: Response) => {
       .status(400)
       .json({ message: 'Email or password is invalid. Please try again.' });
   }
+
+  const accessToken = jwt.sign({ id: user.id }, 'ACCESS_SECRET', {
+    expiresIn: '30s',
+  });
+
+  const refreshToken = jwt.sign({ id: user.id }, 'REFRESH_SECRET', {
+    expiresIn: '1w',
+  });
+
+  res.cookie('access_token', accessToken, {
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000,
+  });
+
+  res.cookie('refresh_token', refreshToken, {
+    httpOnly: true,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
 
   return res.status(200).json({ message: 'Logged in successfully!' });
 };
