@@ -1,3 +1,4 @@
+import cors from 'cors';
 import express from 'express';
 import { AppDataSource } from './data-source';
 import authRouter from './routes/auth';
@@ -9,6 +10,7 @@ AppDataSource.initialize()
     const app = express();
 
     app.use(express.json());
+    app.use(cors({ credentials: true, origin: '*' }));
 
     app.use('/api', authRouter);
 
