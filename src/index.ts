@@ -3,6 +3,8 @@ import express from 'express';
 import { AppDataSource } from './data-source';
 import authRouter from './routes/auth';
 
+require('dotenv').config();
+
 AppDataSource.initialize()
   .then(async () => {
     console.log('Connected to the database.');
@@ -14,7 +16,7 @@ AppDataSource.initialize()
 
     app.use('/api', authRouter);
 
-    const PORT = 8080;
+    const PORT = process.env.PORT || 8080;
     app.listen(PORT, () => {
       console.log(`Server started and listening at port ${PORT}`);
     });

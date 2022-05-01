@@ -63,13 +63,21 @@ export const Login = async (req: Request, res: Response) => {
       .json({ message: 'Email or password is invalid. Please try again.' });
   }
 
-  const accessToken = jwt.sign({ id: user.id }, 'ACCESS_SECRET', {
-    expiresIn: '30s',
-  });
+  const accessToken = jwt.sign(
+    { id: user.id },
+    process.env.ACCESS_TOKEN_SECRET || '',
+    {
+      expiresIn: '30s',
+    }
+  );
 
-  const refreshToken = jwt.sign({ id: user.id }, 'REFRESH_SECRET', {
-    expiresIn: '1w',
-  });
+  const refreshToken = jwt.sign(
+    { id: user.id },
+    process.env.REFRESH_TOKEN_SECRET || '',
+    {
+      expiresIn: '1w',
+    }
+  );
 
   res.cookie('access_token', accessToken, {
     httpOnly: true,
