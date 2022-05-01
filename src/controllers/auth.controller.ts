@@ -22,13 +22,21 @@ export const Register = async (req: Request, res: Response) => {
     });
   }
 
-  const user = new User(
+  const userRepository = AppDataSource.getRepository(User);
+  const user = await userRepository.findOneBy({ email: email });
+  if (email === user?.email) {
+    return res
+      .status(400)
+      .json({ message: 'Email is already registered. Please try again.' });
+  }
+
+  const newUser = new User(
     firstName,
     lastName,
     email,
     await bcrypt.hash(password, 12)
   );
-  await AppDataSource.manager.save(user);
+  await userRepository.save(newUser);
 
   return res.status(201).json({ message: 'User is registered successfully!' });
 };
