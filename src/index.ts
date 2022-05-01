@@ -1,13 +1,21 @@
 import express, { Request, Response } from "express";
+import { AppDataSource } from "./data-source";
 
-const app = express();
+AppDataSource.initialize()
+  .then(async () => {
+    console.log("Connected to the database.");
 
-app.get("/", (req: Request, res: Response) => {
-  res.status(200).send("Welcome to Two-Factor Authentication using Node.js");
-});
+    const app = express();
 
-const PORT = 5000;
+    app.get("/", (req: Request, res: Response) => {
+      res
+        .status(200)
+        .send("Welcome to Two-Factor Authentication using Node.js");
+    });
 
-app.listen(PORT, () => {
-  console.log(`Server started and listening at port ${PORT}`);
-});
+    const PORT = 5000;
+    app.listen(PORT, () => {
+      console.log(`Server started and listening at port ${PORT}`);
+    });
+  })
+  .catch((error) => console.log(error));
