@@ -12,7 +12,7 @@ AppDataSource.initialize()
 
     app.use('/api', authRouter);
 
-    const PORT = 5000;
+    const PORT = 8080;
     app.listen(PORT, () => {
       console.log(`Server started and listening at port ${PORT}`);
     });
