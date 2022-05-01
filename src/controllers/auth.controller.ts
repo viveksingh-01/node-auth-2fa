@@ -1,7 +1,7 @@
-import bcrypt from "bcryptjs";
-import { Request, Response } from "express";
-import { AppDataSource } from "../data-source";
-import { User } from "../entity/User";
+import bcrypt from 'bcryptjs';
+import { Request, Response } from 'express';
+import { AppDataSource } from '../data-source';
+import { User } from '../entity/User';
 
 type IRegister = {
   firstName: string;
@@ -30,5 +30,5 @@ export const Register = async (req: Request, res: Response) => {
   );
   await AppDataSource.manager.save(user);
 
-  return res.status(201).json({ message: "User is registered successfully!" });
+  return res.status(201).json({ message: 'User is registered successfully!' });
 };
