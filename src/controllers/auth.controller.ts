@@ -103,12 +103,12 @@ export const AuthenticatedUser = async (req: Request, res: Response) => {
       return res.status(401).json({ message: 'Unauthorized access.' });
     }
 
-    const user = await userRepository.findOne(payload.id);
+    const user = await userRepository.findOneBy(payload.id);
     if (!user) {
       return res.status(401).json({ message: 'Unauthorized access.' });
     }
-
-    return res.status(200).json({ user });
+    const { password, ...data } = user;
+    return res.status(200).json({ data });
   } catch (e) {
     console.error(e);
     return res.status(401).json({ message: 'Unauthorized access.' });
