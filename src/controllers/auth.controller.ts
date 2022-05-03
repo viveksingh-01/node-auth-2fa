@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import { AppDataSource } from '../data-source';
 import { User } from '../entity/User';
 
-type IRegister = {
+type RegisterPayload = {
   firstName: string;
   lastName: string;
   email: string;
@@ -12,7 +12,7 @@ type IRegister = {
   confirmPassword: string;
 };
 
-type ILogin = {
+type LoginPayload = {
   email: string;
   password: string;
 };
@@ -22,7 +22,7 @@ const userRepository = AppDataSource.getRepository(User);
 export const Register = async (req: Request, res: Response) => {
   const { body } = req;
   const { firstName, lastName, email, password, confirmPassword } =
-    body as IRegister;
+    body as RegisterPayload;
 
   if (confirmPassword !== password) {
     return res.status(400).json({
@@ -50,7 +50,7 @@ export const Register = async (req: Request, res: Response) => {
 
 export const Login = async (req: Request, res: Response) => {
   const { body } = req;
-  const { email, password } = body as ILogin;
+  const { email, password } = body as LoginPayload;
   const user = await userRepository.findOneBy({ email });
   if (!user) {
     return res.status(404).json({ message: 'User not found.' });
@@ -90,4 +90,27 @@ export const Login = async (req: Request, res: Response) => {
   });
 
   return res.status(200).json({ message: 'Logged in successfully!' });
+};
+
+export const AuthenticatedUser = async (req: Request, res: Response) => {
+  try {
+    const accessToken = req.cookies['access_token'];
+    const payload = jwt.verify(
+      accessToken,
+      process.env.ACCESS_TOKEN_SECRET || ''
+    ) as any;
+    if (!payload) {
+      return res.status(401).json({ message: 'Unauthorized access.' });
+    }
+
+    const user = await userRepository.findOne(payload.id);
+    if (!user) {
+      return res.status(401).json({ message: 'Unauthorized access.' });
+    }
+
+    return res.status(200).json({ user });
+  } catch (e) {
+    console.error(e);
+    return res.status(401).json({ message: 'Unauthorized access.' });
+  }
 };

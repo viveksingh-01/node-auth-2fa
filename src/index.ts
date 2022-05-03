@@ -1,3 +1,4 @@
+import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
 import { AppDataSource } from './data-source';
@@ -12,6 +13,7 @@ AppDataSource.initialize()
     const app = express();
 
     app.use(express.json());
+    app.use(cookieParser());
     app.use(cors({ credentials: true, origin: '*' }));
 
     app.use('/api', authRouter);
