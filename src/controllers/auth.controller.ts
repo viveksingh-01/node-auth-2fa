@@ -131,3 +131,9 @@ export const RefreshAccessToken = (req: Request, res: Response) => {
     return res.status(401).json({ message: 'Unauthorized access.' });
   }
 };
+
+export const Logout = (req: Request, res: Response) => {
+  res.cookie('access_token', '', { maxAge: 0 });
+  res.cookie('refresh_token', '', { maxAge: 0 });
+  return res.status(200).json({ message: 'Logged out successfully!' });
+};
