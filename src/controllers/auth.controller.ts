@@ -71,20 +71,18 @@ export const Login = async (req: Request, res: Response) => {
       expiresIn: '1w',
     }
   );
-  res.cookie('access_token', accessToken, {
-    httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000,
-  });
   res.cookie('refresh_token', refreshToken, {
     httpOnly: true,
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
-  return res.status(200).json({ message: 'Logged in successfully!' });
+  return res
+    .status(200)
+    .json({ message: 'Logged in successfully!', token: accessToken });
 };
 
 export const AuthenticatedUser = async (req: Request, res: Response) => {
   try {
-    const accessToken = req.cookies['access_token'];
+    const accessToken = req.header('Authorization')?.split(' ')[1] || '';
     const payload = jwt.verify(
       accessToken,
       process.env.ACCESS_TOKEN_SECRET || ''
@@ -121,11 +119,10 @@ export const RefreshAccessToken = (req: Request, res: Response) => {
         expiresIn: '30s',
       }
     );
-    res.cookie('access_token', accessToken, {
-      httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000,
+    res.status(200).json({
+      message: 'Access Token refreshed successfully!',
+      token: accessToken,
     });
-    res.status(200).json({ message: 'Access Token refreshed successfully!' });
   } catch (e) {
     console.error(e);
     return res.status(401).json({ message: 'Unauthorized access.' });
@@ -133,7 +130,6 @@ export const RefreshAccessToken = (req: Request, res: Response) => {
 };
 
 export const Logout = (req: Request, res: Response) => {
-  res.cookie('access_token', '', { maxAge: 0 });
   res.cookie('refresh_token', '', { maxAge: 0 });
   return res.status(200).json({ message: 'Logged out successfully!' });
 };
