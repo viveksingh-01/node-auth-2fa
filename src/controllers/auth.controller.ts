@@ -28,7 +28,7 @@ export const Register = async (req: Request, res: Response) => {
       message: "Passwords don't match. Please try again.",
     });
   }
-  const user = await userRepository.findOneBy({ email: email });
+  const user = await userRepository.findOneBy({ email });
   if (email === user?.email) {
     return res
       .status(400)
@@ -90,12 +90,12 @@ export const AuthenticatedUser = async (req: Request, res: Response) => {
     if (!payload) {
       return res.status(401).json({ message: 'Unauthorized access.' });
     }
-    const user = await userRepository.findOneBy(payload.id);
+    const user = await userRepository.findOneBy({ id: payload.id });
     if (!user) {
       return res.status(401).json({ message: 'Unauthorized access.' });
     }
     const { password, ...data } = user;
-    return res.status(200).json({ data });
+    return res.status(200).json({ ...data });
   } catch (e) {
     console.error(e);
     return res.status(401).json({ message: 'Unauthorized access.' });
