@@ -1,18 +1,18 @@
 import { Router } from 'express';
 import {
-  AuthenticatedUser,
-  Login,
-  Logout,
-  RefreshAccessToken,
-  Register,
+  getLoggedinUser,
+  login,
+  logout,
+  refreshAccessToken,
+  signup,
 } from '../controllers/auth.controller';
 
 const router = Router();
 
-router.post('/register', Register);
-router.post('/login', Login);
-router.get('/user', AuthenticatedUser);
-router.post('/refresh', RefreshAccessToken);
-router.post('/logout', Logout);
+router.post('/signup', signup);
+router.post('/login', login);
+router.get('/user', getLoggedinUser);
+router.post('/refresh', refreshAccessToken);
+router.post('/logout', logout);
 
 export default router;

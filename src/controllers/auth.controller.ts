@@ -19,7 +19,7 @@ type LoginPayload = {
 
 const userRepository = AppDataSource.getRepository(User);
 
-export const Register = async (req: Request, res: Response) => {
+export const signup = async (req: Request, res: Response) => {
   const { body } = req;
   const { firstName, lastName, email, password, confirmPassword } =
     body as RegisterPayload;
@@ -44,7 +44,7 @@ export const Register = async (req: Request, res: Response) => {
   return res.status(201).json({ message: 'User is registered successfully!' });
 };
 
-export const Login = async (req: Request, res: Response) => {
+export const login = async (req: Request, res: Response) => {
   const { body } = req;
   const { email, password } = body as LoginPayload;
   const user = await userRepository.findOneBy({ email });
@@ -80,7 +80,7 @@ export const Login = async (req: Request, res: Response) => {
     .json({ message: 'Logged in successfully!', token: accessToken });
 };
 
-export const AuthenticatedUser = async (req: Request, res: Response) => {
+export const getLoggedinUser = async (req: Request, res: Response) => {
   try {
     const accessToken = req.header('Authorization')?.split(' ')[1] || '';
     const payload = jwt.verify(
@@ -102,7 +102,7 @@ export const AuthenticatedUser = async (req: Request, res: Response) => {
   }
 };
 
-export const RefreshAccessToken = (req: Request, res: Response) => {
+export const refreshAccessToken = (req: Request, res: Response) => {
   try {
     const refreshToken = req.cookies['refresh_token'];
     const payload = jwt.verify(
@@ -129,7 +129,7 @@ export const RefreshAccessToken = (req: Request, res: Response) => {
   }
 };
 
-export const Logout = (req: Request, res: Response) => {
+export const logout = (req: Request, res: Response) => {
   res.cookie('refresh_token', '', { maxAge: 0 });
   return res.status(200).json({ message: 'Logged out successfully!' });
 };
