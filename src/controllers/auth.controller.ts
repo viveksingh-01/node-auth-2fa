@@ -41,7 +41,7 @@ export const signup = async (req: Request, res: Response) => {
     await bcrypt.hash(password, 12)
   );
   await userRepository.save(newUser);
-  return res.status(201).json({ message: 'User is registered successfully!' });
+  return res.status(201).json({ message: `You've signed up successfully!` });
 };
 
 export const login = async (req: Request, res: Response) => {
@@ -77,7 +77,7 @@ export const login = async (req: Request, res: Response) => {
   });
   return res
     .status(200)
-    .json({ message: 'Logged in successfully!', token: accessToken });
+    .json({ message: `You've logged in successfully!`, token: accessToken });
 };
 
 export const getLoggedinUser = async (req: Request, res: Response) => {
@@ -131,5 +131,5 @@ export const refreshAccessToken = (req: Request, res: Response) => {
 
 export const logout = (req: Request, res: Response) => {
   res.cookie('refresh_token', '', { maxAge: 0 });
-  return res.status(200).json({ message: 'Logged out successfully!' });
+  return res.status(200).json({ message: `You've logged out successfully!` });
 };
