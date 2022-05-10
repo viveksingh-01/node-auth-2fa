@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
+import speakeasy from 'speakeasy';
 import { AppDataSource } from '../data-source';
 import { User } from '../entity/User';
 
@@ -57,27 +58,76 @@ export const login = async (req: Request, res: Response) => {
       .status(400)
       .json({ message: 'Email or password is invalid. Please try again.' });
   }
-  const accessToken = jwt.sign(
-    { id: user.id },
-    process.env.ACCESS_TOKEN_SECRET || '',
-    {
-      expiresIn: '30s',
-    }
-  );
-  const refreshToken = jwt.sign(
-    { id: user.id },
-    process.env.REFRESH_TOKEN_SECRET || '',
-    {
-      expiresIn: '1w',
-    }
-  );
-  res.cookie('refresh_token', refreshToken, {
-    httpOnly: true,
-    maxAge: 7 * 24 * 60 * 60 * 1000,
+
+  if (user.secret2FA) {
+    return res.status(200).json({
+      id: user.id,
+    });
+  }
+
+  const secret = speakeasy.generateSecret({
+    name: 'Svelte 2FA',
   });
-  return res
-    .status(200)
-    .json({ message: `You've logged in successfully!`, token: accessToken });
+
+  return res.status(200).json({
+    id: user.id,
+    secret: secret.ascii,
+    otpAuthUrl: secret.otpauth_url,
+  });
+};
+
+export const process2FAuth = async (req: Request, res: Response) => {
+  try {
+    const id = req.body.id;
+    const user = await userRepository.findOneBy({ id });
+    if (!user) {
+      return res.status(400).json({
+        message: 'Invalid credentials',
+      });
+    }
+
+    const secret = user.secret2FA || req.body.secret;
+    const isVerified = speakeasy.totp.verify({
+      secret,
+      encoding: 'ascii',
+      token: req.body.code,
+    });
+    if (!isVerified) {
+      return res.status(400).json({
+        message: 'Invalid credentials',
+      });
+    }
+
+    if (!user.secret2FA) {
+      await userRepository.update(id, { secret2FA: secret });
+    }
+
+    const accessToken = jwt.sign(
+      { id: user.id },
+      process.env.ACCESS_TOKEN_SECRET || '',
+      {
+        expiresIn: '30s',
+      }
+    );
+    const refreshToken = jwt.sign(
+      { id: user.id },
+      process.env.REFRESH_TOKEN_SECRET || '',
+      {
+        expiresIn: '1w',
+      }
+    );
+    res.cookie('refresh_token', refreshToken, {
+      httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+    return res
+      .status(200)
+      .json({ message: `You've logged in successfully!`, token: accessToken });
+  } catch (e) {
+    return res.status(400).json({
+      message: 'Invalid credentials',
+    });
+  }
 };
 
 export const getLoggedinUser = async (req: Request, res: Response) => {
